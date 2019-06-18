@@ -2,7 +2,6 @@ package trace
 
 import (
 	"bytes"
-	"io"
 	"testing"
 )
 
@@ -17,8 +16,4 @@ func TestNew(t *testing.T) {
 			t.Errorf("Trace should not write '%s'.", buf.String())
 		}
 	}
-}
-
-func New(w io.Writer) Tracer {
-	return &tracer{out: w}
 }
