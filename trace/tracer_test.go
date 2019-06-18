@@ -20,5 +20,5 @@ func TestNew(t *testing.T) {
 }
 
 func New(w io.Writer) Tracer {
-	return nil
+	return &tracer{out: w}
 }
