@@ -2,9 +2,11 @@ package main
 
 import (
 	"flag"
+	"github.com/SuddenGunter/blueprints/trace"
 	"html/template"
 	"log"
 	"net/http"
+	"os"
 	"path/filepath"
 	"sync"
 )
@@ -28,6 +30,7 @@ func main() {
 	flag.PrintDefaults()
 	flag.Parse() // parse the flags
 	r := newRoom()
+	r.tracer = trace.New(os.Stdout)
 	http.Handle("/", &templateHandler{filename: "chat.html"})
 	http.Handle("/room", r)
 	// get the room going
