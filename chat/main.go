@@ -29,8 +29,9 @@ func main() {
 	flag.Parse() // parse the flags
 	r := newRoom()
 
-	http.Handle("/", &templateHandler{filename: "chat.html"})
+	http.Handle("/chat", MustAuth(&templateHandler{filename: "chat.html"}))
 	http.Handle("/room", r)
+	http.Handle("/login", &templateHandler{filename: "login.html"})
 	// get the room going
 	go r.run()
 	// start the web server
