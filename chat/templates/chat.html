@@ -47,13 +47,15 @@
      messages.append(
        $("<li>").append(
          $("<code>").text(new Date(msg.When).toLocaleTimeString('en-US')),
+          $("<img>").css({
+           width:50,
+           verticalAlign:"middle"
+         }).attr("src", msg.AvatarURL),
          $("<strong>").text(msg.Name + ": "),
          $("<span>").text(msg.Message)
-
-) );
-}
-             }
-         });
+        ) );}
+       }
+ });
 
 
 </script>
