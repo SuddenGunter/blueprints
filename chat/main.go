@@ -38,14 +38,14 @@ func main() {
 	flag.PrintDefaults()
 	flag.Parse() // parse the flags
 
-	provider := github.New(os.Getenv("GITHUB_KEY"), os.Getenv("GITHUB_SECRET"), "http://localhost"+*addr+"/auth/callback?provider=github")
-	goth.UseProviders(provider)
+	configureAuth(addr)
 
 	r := newRoom()
 	http.Handle("/chat", MustAuth(&templateHandler{filename: "chat.html"}))
 	http.Handle("/room", r)
 	http.Handle("/login", &templateHandler{filename: "login.html"})
 	http.HandleFunc("/auth/", loginHandler)
+
 	// get the room going
 	go r.run()
 	// start the web server
@@ -53,4 +53,19 @@ func main() {
 	if err := http.ListenAndServe(*addr, nil); err != nil {
 		log.Fatal("ListenAndServe:", err)
 	}
+}
+
+func configureAuth(addr *string) {
+	provider := github.New(os.Getenv("GITHUB_KEY"), os.Getenv("GITHUB_SECRET"), "http://localhost"+*addr+"/auth/callback?provider=github")
+	goth.UseProviders(provider)
+	http.HandleFunc("/logout", func(w http.ResponseWriter, r *http.Request) {
+		http.SetCookie(w, &http.Cookie{
+			Name:   "auth",
+			Value:  "",
+			Path:   "/",
+			MaxAge: -1,
+		})
+		w.Header().Set("Location", "/chat")
+		w.WriteHeader(http.StatusTemporaryRedirect)
+	})
 }
