@@ -2,9 +2,12 @@ package main
 
 import (
 	"flag"
+	"github.com/markbates/goth"
+	"github.com/markbates/goth/providers/github"
 	"html/template"
 	"log"
 	"net/http"
+	"os"
 	"path/filepath"
 	"sync"
 )
@@ -27,8 +30,11 @@ func main() {
 	var addr = flag.String("addr", ":8080", "The addr of the application.")
 	flag.PrintDefaults()
 	flag.Parse() // parse the flags
-	r := newRoom()
 
+	provider := github.New(os.Getenv("GITHUB_KEY"), os.Getenv("GITHUB_SECRET"), "http://localhost"+*addr+"/auth/callback?provider=github")
+	goth.UseProviders(provider)
+
+	r := newRoom()
 	http.Handle("/chat", MustAuth(&templateHandler{filename: "chat.html"}))
 	http.Handle("/room", r)
 	http.Handle("/login", &templateHandler{filename: "login.html"})

@@ -2,6 +2,8 @@ package main
 
 import (
 	"fmt"
+	"github.com/markbates/goth/gothic"
+	"github.com/stretchr/objx"
 	"log"
 	"net/http"
 	"strings"
@@ -39,10 +41,24 @@ func loginHandler(w http.ResponseWriter, r *http.Request) {
 	action := segs[2]
 	provider := r.URL.Query().Get("provider")
 	switch action {
+	case "callback":
+		user, err := gothic.CompleteUserAuth(w, r)
+		if err != nil {
+			fmt.Fprintln(w, err)
+			return
+		}
+		fmt.Printf("user data: %v", user)
+		authCookieValue := objx.New(map[string]interface{}{
+			"name": user.Name,
+		}).MustBase64()
+		http.SetCookie(w, &http.Cookie{
+			Name:  "auth",
+			Value: authCookieValue,
+			Path:  "/"})
+		w.Header().Set("Location", "/chat")
+		w.WriteHeader(http.StatusTemporaryRedirect)
 	case "login":
-		log.Println("TODO handle login for", provider)
-	default:
-		w.WriteHeader(http.StatusNotFound)
-		fmt.Fprintf(w, "Auth action %s not supported", action)
+		log.Println("Started login for", provider)
+		gothic.BeginAuthHandler(w, r)
 	}
 }
