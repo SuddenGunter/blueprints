@@ -46,8 +46,10 @@
      var msg = JSON.parse(e.data);
      messages.append(
        $("<li>").append(
+         $("<code>").text(new Date(msg.When).toLocaleTimeString('en-US')),
          $("<strong>").text(msg.Name + ": "),
          $("<span>").text(msg.Message)
+
 ) );
 }
              }
