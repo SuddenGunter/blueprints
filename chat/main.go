@@ -40,7 +40,7 @@ func main() {
 
 	configureAuth(addr)
 
-	r := newRoom(UseAuthAvatar)
+	r := newRoom(UseGravatar)
 	http.Handle("/chat", MustAuth(&templateHandler{filename: "chat.html"}))
 	http.Handle("/room", r)
 	http.Handle("/login", &templateHandler{filename: "login.html"})
@@ -56,7 +56,8 @@ func main() {
 }
 
 func configureAuth(addr *string) {
-	provider := github.New(os.Getenv("GITHUB_KEY"), os.Getenv("GITHUB_SECRET"), "http://localhost"+*addr+"/auth/callback?provider=github")
+	provider := github.New(os.Getenv("GITHUB_KEY"), os.Getenv("GITHUB_SECRET"), "http://localhost"+*addr+"/auth/callback?provider=github",
+		"user:email")
 	goth.UseProviders(provider)
 	http.HandleFunc("/logout", func(w http.ResponseWriter, r *http.Request) {
 		http.SetCookie(w, &http.Cookie{
