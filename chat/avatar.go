@@ -7,6 +7,17 @@ import (
 	"path"
 )
 
+type TryAvatars []Avatar
+
+func (a TryAvatars) GetAvatarURL(u ChatUser) (string, error) {
+	for _, avatar := range a {
+		if url, err := avatar.GetAvatarURL(u); err == nil {
+			return url, nil
+		}
+	}
+	return "", ErrNoAvatarURL
+}
+
 type ChatUser interface {
 	UniqueID() string
 	AvatarURL() (string, error)
