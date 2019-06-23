@@ -13,8 +13,6 @@ type client struct {
 	send chan *message
 	// room is the room this client is chatting in.
 	room *room
-	// userData holds information about the user
-	userData map[string]interface{}
 }
 
 func (c *client) read() {
@@ -25,10 +23,8 @@ func (c *client) read() {
 			return
 		}
 		msg.When = time.Now()
-		msg.Name = c.userData["name"].(string)
-		if avatarUrl, ok := c.userData["avatar_url"]; ok {
-			msg.AvatarURL = avatarUrl.(string)
-		}
+		msg.Name = "TestChatUser"
+		msg.AvatarURL = "http://localhost:8080/avatars/3b1b576280c18090681643dab9ab19a8.png"
 		c.room.forward <- msg
 	}
 }

@@ -3,7 +3,6 @@ package main
 import (
 	"github.com/SuddenGunter/blueprints/trace"
 	"github.com/gorilla/websocket"
-	"github.com/stretchr/objx"
 	"log"
 	"net/http"
 )
@@ -21,8 +20,6 @@ type room struct {
 	// tracer will receive trace information of activity
 	// in the room.
 	tracer trace.Tracer
-	// avatar is how avatar information will be obtained.
-	avatar Avatar
 }
 
 func (r *room) run() {
@@ -64,7 +61,9 @@ const (
 )
 
 var upgrader = &websocket.Upgrader{ReadBufferSize: socketBufferSize,
-	WriteBufferSize: socketBufferSize}
+	WriteBufferSize: socketBufferSize, CheckOrigin: func(r *http.Request) bool {
+		return true
+	}}
 
 func (r *room) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 	socket, err := upgrader.Upgrade(w, req, nil)
@@ -72,16 +71,10 @@ func (r *room) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 		log.Fatal("ServeHTTP:", err)
 		return
 	}
-	authCookie, err := req.Cookie("auth")
-	if err != nil {
-		log.Fatal("Failed to get auth cookie:", err)
-		return
-	}
 	client := &client{
-		socket:   socket,
-		send:     make(chan *message, messageBufferSize),
-		room:     r,
-		userData: objx.MustFromBase64(authCookie.Value),
+		socket: socket,
+		send:   make(chan *message, messageBufferSize),
+		room:   r,
 	}
 	r.join <- client
 	defer func() { r.leave <- client }()

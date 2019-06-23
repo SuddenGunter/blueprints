@@ -1,7 +1,7 @@
 <html>
 <head>
     <title>Chat</title>
-    <link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://netdna.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css">
     <style>
         ul#messages {
             list-style: none;
@@ -25,14 +25,13 @@
     </div>
     <form id="chatbox" role="form">
         <div class="form-group">
-            <label for="message">Send a message as {{.UserData.name}}
-            </label> or <a href="/logout">Sign out</a>
+            <label for="message">Send a message as "username"
             <textarea id="message" class="form-control"></textarea>
         </div>
         <input type="submit" value="Send" class="btn btn-default"/>
     </form>
 </div>
-<script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js">
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js">
 </script>
 <script>
          $(function(){
@@ -52,7 +51,7 @@
            if (!window["WebSocket"]) {
              alert("Error: Your browser does not support web  sockets.")
            } else {
-             socket = new WebSocket("ws://{{.Host}}/room");
+             socket = new WebSocket("ws://localhost:8080/room");
              socket.onclose = function() {
                alert("Connection has been closed.");
              }
